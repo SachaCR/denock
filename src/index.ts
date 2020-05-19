@@ -1,78 +1,87 @@
-import { Options, Denock } from "./type.ts";
+import { MultiReader } from 'https://deno.land/std/io/readers.ts';
 
-function denock(options: Options): Denock {
+import { DenockOptions, Denock, RequestData } from './type.ts';
+
+import { formatTargetUrlFromOptions } from './formatTargetUrlFromOptions.ts';
+import { extractInfosFromStringAndRequestInitObject } from './extractInfosFromStringAndRequestInitObject.ts';
+import { verifyMatch } from './verifyMatch.ts';
+
+function denock(options: DenockOptions): Denock {
   const originalFetch = window.fetch;
   let calledTimes = 0;
+
+  const {
+    method,
+    responseBody,
+    headers,
+    interception,
+    requestBody,
+    replyStatus,
+  } = options;
+
+  const targetURl = formatTargetUrlFromOptions(options);
 
   window.fetch = async (
     input: string | Request | URL,
     init?: RequestInit | undefined,
   ) => {
-    calledTimes++;
-    if (typeof input !== "string") {
-      throw new Error("Denock only support string url at the moment");
+    if (calledTimes === interception) {
+      throw new Error('Denock: all interception has already been used');
     }
 
-    const {
-      host,
-      method,
-      protocol,
-      responseBody,
-      headers,
-      interception,
-      path,
-      port,
-      requestBody,
-      queryParams,
-      replyStatus,
-    } = options;
+    calledTimes++;
 
-    let queryParamsString = "";
+    if (typeof input === 'string') {
+      const requestData = extractInfosFromStringAndRequestInitObject(
+        input,
+        init,
+      );
 
-    if (queryParams) {
-      queryParamsString = Object.keys(queryParams).reduce(
-        (result, k, idx) => {
-          if (idx > 0) {
-            result += "&";
+      verifyMatch(targetURl, options, requestData);
+    }
+
+    if ((input as Request).clone !== undefined) {
+      // @TODO extracto to function
+      const request = input as Request;
+      const originalUrl = request.url;
+      const originalMethod = request.method.toUpperCase();
+      let originalBody = '{}';
+
+      if (request.body) {
+        const readableStreamReader = request.body?.getReader();
+
+        async function readSteam(
+          streamReader: ReadableStreamDefaultReader,
+          result: string,
+        ): Promise<string> {
+          const chunk = await readableStreamReader.read();
+
+          if (chunk.done || !chunk.value) {
+            return result;
           }
 
-          result += `${k}=${queryParams[k]}`;
+          result += chunk.value;
 
-          return result;
-        },
-        "?",
-      );
-    }
+          return readSteam(streamReader, result);
+        }
 
-    const portString = port ? ":" + port : "";
-
-    const targetUrl =
-      `${protocol}://${host}${portString}${path}${queryParamsString}`;
-
-    //console.log("targetUrl >>>>>>>>>", targetUrl);
-
-    if (input.toString() !== targetUrl.toString()) {
-      throw new Error(`Denock: no match for this url : ${input}`);
-    }
-
-    if (init) {
-      const originalMethod = init.method || "GET";
-
-      if (typeof init.body !== "string") {
-        throw new Error("Denock only support string body at the moment");
+        originalBody = await readSteam(readableStreamReader, '');
       }
 
-      const originalBody = JSON.parse(init.body);
-
-      if (originalMethod !== method) {
-        throw new Error(`Denock: no method match : ${originalMethod}`);
+      if ((input as URL).toJSON !== undefined) {
+        // @TODO
       }
 
-      if (requestBody && originalBody !== requestBody) {
-        throw new Error(`Denock: no body match : ${originalMethod}`);
-      }
+      const requestData = {
+        originalUrl,
+        originalMethod,
+        originalBody,
+      };
+
+      verifyMatch(targetURl, options, requestData);
     }
 
+    // @TODO make sure it is always restored event if exception is thrown
     window.fetch = originalFetch;
 
     return {

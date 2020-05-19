@@ -1,6 +1,8 @@
-export interface Options {
-  method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
-  protocol: "http" | "https";
+export type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+
+export interface DenockOptions {
+  method: HTTPMethods;
+  protocol: 'http' | 'https';
   host: string;
   port?: number;
   path?: string;
@@ -15,4 +17,10 @@ export interface Options {
 export interface Denock {
   destroy: () => void;
   called: () => number;
+}
+
+export interface RequestData {
+  originalUrl: string;
+  originalMethod: string;
+  originalBody: string;
 }
