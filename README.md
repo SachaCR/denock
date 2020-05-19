@@ -9,14 +9,19 @@ If you find issues please open an issues on github and if you want to contribute
 ## Example:
 
 ```typescript
+import { denock } from 'https://raw.githubusercontent.com/SachaCR/denock/master/mod.ts';
+// Or
+import { denock } from 'https://deno.land/x/denock/mod.ts';
+
+
 denock({
   method: 'POST',
   protocol: 'https',
   host: 'jsonplaceholder.typicode.com',
   path: '/todos',
-  responseBody: { test: '4' },
+  responseBody: { test: '5' },
   requestBody: {
-    userId: 1,
+    userId: 2,
     id: 23024,
     title: 'delectus aut autem',
     completed: false,
@@ -24,19 +29,21 @@ denock({
   replyStatus: 201,
 });
 
-const request: Request = new Request(
-  `https://jsonplaceholder.typicode.com/todos`,
-  {
-    method: 'POST',
-    body: JSON.stringify({
-      userId: 1,
-      id: 23024,
-      title: 'delectus aut autem',
-      completed: false,
-    }),
-  },
+const urlObject = new URL('https://jsonplaceholder.typicode.com/todos');
 
-  request.body, // ==> { test: '4' } instead of the real response.
+const response = await fetch(urlObject, {
+  method: 'POST',
+  body: JSON.stringify({
+    userId: 2,
+    id: 23024,
+    title: 'delectus aut autem',
+    completed: false,
+  }),
+});
+
+const body = await response.json();
+
+console.log(body) // ==> { test: '5' } instead of the real response.
 );
 ```
 
