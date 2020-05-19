@@ -1,6 +1,7 @@
 # Denock
 
-This module allow you to intercept HTTP calls. It's inspired from the NPM package nock.
+This module allow you to intercept HTTP calls. It's inspired from the NPM package [nock](https://www.npmjs.com/package/nock).
+So your tests will not need `--allow-net` flag anymore.😝
 
 The package works but is still experimental. You can use it for some tests but there is a lot to do to make it stable.
 
