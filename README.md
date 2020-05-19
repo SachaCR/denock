@@ -2,7 +2,9 @@
 
 This module allow you to intercept HTTP calls. It's inspired from the NPM package nock.
 
-Still a work in progress
+The package works but is still experimental. You can use it for some tests but there is a lot to do to make it stable.
+
+If you find issues please open an issues on github and if you want to contribute open a PR. (see TODO section below)
 
 ## Example:
 
@@ -37,3 +39,13 @@ const request: Request = new Request(
   request.body, // ==> { test: '4' } instead of the real response.
 );
 ```
+
+## TODO
+
+- [x] Implement intercept HTTP calls made with fetch with a simple string
+- [x] Implement intercept HTTP calls made with fetch with a simple string and RequestInit object
+- [x] Implement intercept HTTP calls made with fetch with a Request object
+- [x] Implement intercept HTTP calls made with fetch with a URL object
+- [] Implement interception number
+- [] Implement matching on headers
+- [] Implement basic authentication

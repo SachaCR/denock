@@ -1,6 +1,6 @@
-import { assertStrictEq } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { DenockOptions, RequestData } from './type.ts';
+import { DenockOptions, RequestData } from "./type.ts";
 
 export function verifyMatch(
   targetUrl: string,
@@ -23,7 +23,7 @@ export function verifyMatch(
 
   if (options.requestBody) {
     try {
-      assertStrictEq(originalBodyObject, options.requestBody);
+      assertEquals(originalBodyObject, options.requestBody);
     } catch (err) {
       throw new Error(
         `Denock: body does not match: ${requestData.originalBody}`,

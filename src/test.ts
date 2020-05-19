@@ -1,16 +1,16 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { denock } from './index.ts';
+import { denock } from "./index.ts";
 
 Deno.test(
-  'denock : Should intercept a call if the input is a url string',
+  "denock : Should intercept a call if the input is a url string",
   async () => {
     denock({
-      method: 'GET',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos/1',
-      responseBody: { test: '1' },
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos/1",
+      responseBody: { test: "1" },
     });
 
     const response = await fetch(
@@ -18,28 +18,28 @@ Deno.test(
     );
     const body = await response.json();
 
-    assertEquals(body, { test: '1' });
+    assertEquals(body, { test: "1" });
   },
 );
 
 Deno.test(
-  'denock : Should intercept a call if the input is a string and a RequestInit object',
+  "denock : Should intercept a call if the input is a string and a RequestInit object",
   async () => {
     denock({
-      method: 'POST',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      responseBody: { test: '2' },
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "2" },
       replyStatus: 201,
     });
 
     const response = await fetch(`https://jsonplaceholder.typicode.com/todos`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         userId: 1,
         id: 23024,
-        title: 'delectus aut autem',
+        title: "delectus aut autem",
         completed: false,
       }),
     });
@@ -47,32 +47,32 @@ Deno.test(
     const body = await response.json();
     const status = await response.status;
 
-    assertEquals(body, { test: '2' });
+    assertEquals(body, { test: "2" });
     assertEquals(status, 201);
   },
 );
 
 Deno.test(
-  'denock : Should intercept a call if the input is a Request object',
+  "denock : Should intercept a call if the input is a Request object",
   async () => {
     denock({
-      method: 'POST',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      queryParams: { test: 'a' },
-      responseBody: { test: '3' },
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      queryParams: { test: "a" },
+      responseBody: { test: "3" },
       replyStatus: 201,
     });
 
     const request: Request = new Request(
       `https://jsonplaceholder.typicode.com/todos?test=a`,
       {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           userId: 1,
           id: 23024,
-          title: 'delectus aut autem',
+          title: "delectus aut autem",
           completed: false,
         }),
       },
@@ -83,24 +83,24 @@ Deno.test(
     const body = await response.json();
     const status = await response.status;
 
-    assertEquals(body, { test: '3' });
+    assertEquals(body, { test: "3" });
     assertEquals(status, 201);
   },
 );
 
 Deno.test(
-  'denock : Should detect if request body is not matching',
+  "denock : Should detect if request body is not matching",
   async () => {
     denock({
-      method: 'POST',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      responseBody: { test: '4' },
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "4" },
       requestBody: {
         userId: 1,
         id: 23024,
-        title: 'delectus aut autem',
+        title: "delectus aut autem",
         completed: false,
       },
       replyStatus: 201,
@@ -109,11 +109,11 @@ Deno.test(
     const request: Request = new Request(
       `https://jsonplaceholder.typicode.com/todos`,
       {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           userId: 2,
           id: 23024,
-          title: 'delectus aut autem',
+          title: "delectus aut autem",
           completed: false,
         }),
       },
@@ -131,5 +131,43 @@ Deno.test(
       error.message,
       'Denock: body does not match: {"userId":2,"id":23024,"title":"delectus aut autem","completed":false}',
     );
+  },
+);
+
+Deno.test(
+  "denock : Should intercept a call if the input is a URL object",
+  async () => {
+    denock({
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "5" },
+      requestBody: {
+        userId: 2,
+        id: 23024,
+        title: "delectus aut autem",
+        completed: false,
+      },
+      replyStatus: 201,
+    });
+
+    const urlObject = new URL("https://jsonplaceholder.typicode.com/todos");
+
+    const response = await fetch(urlObject, {
+      method: "POST",
+      body: JSON.stringify({
+        userId: 2,
+        id: 23024,
+        title: "delectus aut autem",
+        completed: false,
+      }),
+    });
+
+    const body = await response.json();
+    const status = await response.status;
+
+    assertEquals(body, { test: "5" });
+    assertEquals(status, 201);
   },
 );

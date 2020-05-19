@@ -1,23 +1,15 @@
-import { MultiReader } from 'https://deno.land/std/io/readers.ts';
+import { DenockOptions, Denock, RequestData } from "./type.ts";
 
-import { DenockOptions, Denock, RequestData } from './type.ts';
-
-import { formatTargetUrlFromOptions } from './formatTargetUrlFromOptions.ts';
-import { extractInfosFromStringAndRequestInitObject } from './extractInfosFromStringAndRequestInitObject.ts';
-import { verifyMatch } from './verifyMatch.ts';
+import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
+import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
+import { extractBodyFromRequest } from "./extractBodyFromRequest.ts";
+import { verifyMatch } from "./verifyMatch.ts";
 
 function denock(options: DenockOptions): Denock {
   const originalFetch = window.fetch;
   let calledTimes = 0;
 
-  const {
-    method,
-    responseBody,
-    headers,
-    interception,
-    requestBody,
-    replyStatus,
-  } = options;
+  const { responseBody, interception, replyStatus } = options;
 
   const targetURl = formatTargetUrlFromOptions(options);
 
@@ -26,63 +18,61 @@ function denock(options: DenockOptions): Denock {
     init?: RequestInit | undefined,
   ) => {
     if (calledTimes === interception) {
-      throw new Error('Denock: all interception has already been used');
+      throw new Error("Denock: all interception has already been used");
     }
 
     calledTimes++;
 
-    if (typeof input === 'string') {
-      const requestData = extractInfosFromStringAndRequestInitObject(
-        input,
-        init,
-      );
+    try {
+      if (typeof input === "string") {
+        const {
+          originalBody,
+          originalMethod,
+        } = extractMethodAndBodyFromRequestInitObject(init);
 
-      verifyMatch(targetURl, options, requestData);
-    }
-
-    if ((input as Request).clone !== undefined) {
-      // @TODO extracto to function
-      const request = input as Request;
-      const originalUrl = request.url;
-      const originalMethod = request.method.toUpperCase();
-      let originalBody = '{}';
-
-      if (request.body) {
-        const readableStreamReader = request.body?.getReader();
-
-        async function readSteam(
-          streamReader: ReadableStreamDefaultReader,
-          result: string,
-        ): Promise<string> {
-          const chunk = await readableStreamReader.read();
-
-          if (chunk.done || !chunk.value) {
-            return result;
-          }
-
-          result += chunk.value;
-
-          return readSteam(streamReader, result);
-        }
-
-        originalBody = await readSteam(readableStreamReader, '');
+        verifyMatch(targetURl, options, {
+          originalUrl: input,
+          originalBody,
+          originalMethod,
+        });
       }
 
       if ((input as URL).toJSON !== undefined) {
-        // @TODO
+        const url = input as URL;
+        const {
+          originalBody,
+          originalMethod,
+        } = extractMethodAndBodyFromRequestInitObject(init);
+
+        verifyMatch(targetURl, options, {
+          originalUrl: url.toString(),
+          originalBody,
+          originalMethod,
+        });
       }
 
-      const requestData = {
-        originalUrl,
-        originalMethod,
-        originalBody,
-      };
+      if ((input as Request).clone !== undefined) {
+        const request = input as Request;
+        const originalUrl = request.url;
+        const originalMethod = request.method.toUpperCase();
+        let originalBody = "{}";
 
-      verifyMatch(targetURl, options, requestData);
+        if (request.body) {
+          const readableStreamReader = request.body?.getReader();
+          originalBody = await extractBodyFromRequest(readableStreamReader);
+        }
+
+        verifyMatch(targetURl, options, {
+          originalUrl,
+          originalMethod,
+          originalBody,
+        });
+      }
+    } catch (err) {
+      throw err;
+    } finally {
+      window.fetch = originalFetch;
     }
-
-    // @TODO make sure it is always restored event if exception is thrown
-    window.fetch = originalFetch;
 
     return {
       status: replyStatus || 200,
@@ -101,19 +91,3 @@ function denock(options: DenockOptions): Denock {
 }
 
 export { denock };
-
-// new URL('http://localhost:8000/test/?a=4');
-
-// const url = {
-//   href: "http://localhost:8000/test/?toto=5",
-//   origin: "http://localhost:8000",
-//   protocol: "http:",
-//   username: "",
-//   password: "",
-//   host: "localhost:8000",
-//   hostname: "localhost",
-//   port: "8000",
-//   pathname: "/test/",
-//   hash: "",
-//   search: "?toto=4",
-// };
