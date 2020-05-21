@@ -14,13 +14,11 @@ import { denock } from 'https://raw.githubusercontent.com/SachaCR/denock/master/
 // Or
 import { denock } from 'https://deno.land/x/denock/mod.ts';
 
-
 denock({
   method: 'POST',
   protocol: 'https',
   host: 'jsonplaceholder.typicode.com',
   path: '/todos',
-  responseBody: { test: '5' },
   requestBody: {
     userId: 2,
     id: 23024,
@@ -48,6 +46,20 @@ console.log(body) // ==> { test: '5' } instead of the real response.
 );
 ```
 
+## Options object:
+
+- `method`: "GET" | "POST" | "PATCH" | "PUT" | "DELETE"
+- `protocol`: "http" | "https"
+- `host`: host to intercept
+- `port`: optional port to intercept
+- `path`: optional, is the path of the query
+- `queryParams`?: optional, object that contains URL query parameters
+- `headers`: optional, Not implemented yet.
+- `requestBody`: optional, this is the body that the request must contains to be intercepted
+- `replyStatus`?: optional, default 200, this is the status code that will be returned on interception
+- `responseBody`: this is the body that will be returned on interception;
+- `interception`: optional, default 1 Represent the number of call you want to intercept;
+
 ## TODO
 
 - [x] Implement intercept HTTP calls made with fetch with a simple string
@@ -57,3 +69,4 @@ console.log(body) // ==> { test: '5' } instead of the real response.
 - [x] Implement interception number
 - [ ] Implement matching on headers
 - [ ] Implement basic authentication
+- [ ] Implement a mode where if there is no match the request is not intercepted.
