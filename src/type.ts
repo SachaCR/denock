@@ -1,8 +1,8 @@
-export type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+export type HTTPMethods = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
 export interface DenockOptions {
   method: HTTPMethods;
-  protocol: 'http' | 'https';
+  protocol: "http" | "https";
   host: string;
   port?: number;
   path?: string;

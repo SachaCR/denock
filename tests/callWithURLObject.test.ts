@@ -1,6 +1,6 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { denock } from '../mod.ts';
+import { denock } from "../mod.ts";
 
 Deno.test(
   `denock() : URL object
@@ -10,28 +10,28 @@ Deno.test(
   `,
   async () => {
     denock({
-      method: 'POST',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      responseBody: { test: '5' },
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "5" },
       requestBody: {
         userId: 2,
         id: 23024,
-        title: 'delectus aut autem',
+        title: "delectus aut autem",
         completed: false,
       },
       replyStatus: 201,
     });
 
-    const urlObject = new URL('https://jsonplaceholder.typicode.com/todos');
+    const urlObject = new URL("https://jsonplaceholder.typicode.com/todos");
 
     const response = await fetch(urlObject, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         userId: 2,
         id: 23024,
-        title: 'delectus aut autem',
+        title: "delectus aut autem",
         completed: false,
       }),
     });
@@ -39,7 +39,7 @@ Deno.test(
     const body = await response.json();
     const status = await response.status;
 
-    assertEquals(body, { test: '5' });
+    assertEquals(body, { test: "5" });
     assertEquals(status, 201);
   },
 );

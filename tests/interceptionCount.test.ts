@@ -1,6 +1,6 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { denock } from '../mod.ts';
+import { denock } from "../mod.ts";
 
 Deno.test(
   `denock() : interception count
@@ -11,12 +11,12 @@ Deno.test(
   `,
   async () => {
     const interceptor = denock({
-      method: 'GET',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos/1',
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos/1",
       interception: 2,
-      responseBody: { test: '7' },
+      responseBody: { test: "7" },
     });
 
     const response1 = await fetch(
@@ -29,8 +29,8 @@ Deno.test(
     const body1 = await response1.json();
     const body2 = await response2.json();
 
-    assertEquals(body1, { test: '7' });
-    assertEquals(body2, { test: '7' });
+    assertEquals(body1, { test: "7" });
+    assertEquals(body2, { test: "7" });
     assertEquals(interceptor.called(), 2);
     let error;
     try {

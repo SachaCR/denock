@@ -1,6 +1,6 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { denock } from '../mod.ts';
+import { denock } from "../mod.ts";
 
 Deno.test(
   `denock() : input string only
@@ -10,11 +10,11 @@ Deno.test(
   `,
   async () => {
     denock({
-      method: 'GET',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos/1',
-      responseBody: { test: '1' },
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos/1",
+      responseBody: { test: "1" },
     });
 
     const response = await fetch(
@@ -22,6 +22,6 @@ Deno.test(
     );
     const body = await response.json();
 
-    assertEquals(body, { test: '1' });
+    assertEquals(body, { test: "1" });
   },
 );

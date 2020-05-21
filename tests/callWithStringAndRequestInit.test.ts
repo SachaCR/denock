@@ -1,6 +1,6 @@
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 
-import { denock } from '../mod.ts';
+import { denock } from "../mod.ts";
 
 Deno.test(
   `denock() : input string and RequestInit object
@@ -10,20 +10,20 @@ Deno.test(
   `,
   async () => {
     denock({
-      method: 'POST',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      responseBody: { test: '2' },
+      method: "POST",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "2" },
       replyStatus: 201,
     });
 
     const response = await fetch(`https://jsonplaceholder.typicode.com/todos`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         userId: 1,
         id: 23024,
-        title: 'delectus aut autem',
+        title: "delectus aut autem",
         completed: false,
       }),
     });
@@ -31,7 +31,7 @@ Deno.test(
     const body = await response.json();
     const status = await response.status;
 
-    assertEquals(body, { test: '2' });
+    assertEquals(body, { test: "2" });
     assertEquals(status, 201);
   },
 );
@@ -44,24 +44,24 @@ Deno.test(
   `,
   async () => {
     denock({
-      method: 'GET',
-      protocol: 'https',
-      host: 'jsonplaceholder.typicode.com',
-      path: '/todos',
-      responseBody: { test: '6' },
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "6" },
       replyStatus: 200,
     });
 
-    const urlObject = new URL('https://jsonplaceholder.typicode.com/todos');
+    const urlObject = new URL("https://jsonplaceholder.typicode.com/todos");
 
     const response = await fetch(urlObject, {
-      method: 'GET',
+      method: "GET",
     });
 
     const body = await response.json();
     const status = response.status;
 
-    assertEquals(body, { test: '6' });
+    assertEquals(body, { test: "6" });
     assertEquals(status, 200);
   },
 );

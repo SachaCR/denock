@@ -1,9 +1,9 @@
-import { DenockOptions, Interceptor, RequestData } from './type.ts';
+import { DenockOptions, Interceptor, RequestData } from "./type.ts";
 
-import { formatTargetUrlFromOptions } from './formatTargetUrlFromOptions.ts';
-import { extractMethodAndBodyFromRequestInitObject } from './extractMethodAndBodyFromRequestInitObject.ts';
-import { extractBodyFromRequest } from './extractBodyFromRequest.ts';
-import { verifyMatch } from './verifyMatch.ts';
+import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
+import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
+import { extractBodyFromRequest } from "./extractBodyFromRequest.ts";
+import { verifyMatch } from "./verifyMatch.ts";
 
 function denock(options: DenockOptions): Interceptor {
   const originalFetch = window.fetch;
@@ -23,7 +23,7 @@ function denock(options: DenockOptions): Interceptor {
     callCounter++;
 
     try {
-      if (typeof input === 'string') {
+      if (typeof input === "string") {
         const {
           originalBody,
           originalMethod,
@@ -54,7 +54,7 @@ function denock(options: DenockOptions): Interceptor {
         const request = input as Request;
         const originalUrl = request.url;
         const originalMethod = request.method.toUpperCase();
-        let originalBody = '{}';
+        let originalBody = "{}";
 
         if (request.body) {
           const readableStreamReader = request.body?.getReader();
