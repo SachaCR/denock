@@ -54,6 +54,6 @@ console.log(body) // ==> { test: '5' } instead of the real response.
 - [x] Implement intercept HTTP calls made with fetch with a simple string and RequestInit object
 - [x] Implement intercept HTTP calls made with fetch with a Request object
 - [x] Implement intercept HTTP calls made with fetch with a URL object
-- [] Implement interception number
-- [] Implement matching on headers
-- [] Implement basic authentication
+- [x] Implement interception number
+- [ ] Implement matching on headers
+- [ ] Implement basic authentication

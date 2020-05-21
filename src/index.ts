@@ -1,15 +1,18 @@
-import { DenockOptions, Denock, RequestData } from "./type.ts";
+import { DenockOptions, Interceptor, RequestData } from './type.ts';
 
-import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
-import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
-import { extractBodyFromRequest } from "./extractBodyFromRequest.ts";
-import { verifyMatch } from "./verifyMatch.ts";
+import { formatTargetUrlFromOptions } from './formatTargetUrlFromOptions.ts';
+import { extractMethodAndBodyFromRequestInitObject } from './extractMethodAndBodyFromRequestInitObject.ts';
+import { extractBodyFromRequest } from './extractBodyFromRequest.ts';
+import { verifyMatch } from './verifyMatch.ts';
 
-function denock(options: DenockOptions): Denock {
+function denock(options: DenockOptions): Interceptor {
   const originalFetch = window.fetch;
-  let calledTimes = 0;
+  let callCounter = 0;
+  let callLimit = 1;
 
   const { responseBody, interception, replyStatus } = options;
+
+  callLimit = interception || 1;
 
   const targetURl = formatTargetUrlFromOptions(options);
 
@@ -17,14 +20,10 @@ function denock(options: DenockOptions): Denock {
     input: string | Request | URL,
     init?: RequestInit | undefined,
   ) => {
-    if (calledTimes === interception) {
-      throw new Error("Denock: all interception has already been used");
-    }
-
-    calledTimes++;
+    callCounter++;
 
     try {
-      if (typeof input === "string") {
+      if (typeof input === 'string') {
         const {
           originalBody,
           originalMethod,
@@ -55,7 +54,7 @@ function denock(options: DenockOptions): Denock {
         const request = input as Request;
         const originalUrl = request.url;
         const originalMethod = request.method.toUpperCase();
-        let originalBody = "{}";
+        let originalBody = '{}';
 
         if (request.body) {
           const readableStreamReader = request.body?.getReader();
@@ -69,8 +68,11 @@ function denock(options: DenockOptions): Denock {
         });
       }
     } catch (err) {
+      window.fetch = originalFetch;
       throw err;
-    } finally {
+    }
+
+    if (callLimit === callCounter) {
       window.fetch = originalFetch;
     }
 
@@ -85,7 +87,7 @@ function denock(options: DenockOptions): Denock {
       window.fetch = originalFetch;
     },
     called: () => {
-      return calledTimes;
+      return callCounter;
     },
   };
 }

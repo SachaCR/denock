@@ -1,8 +1,8 @@
-export type HTTPMethods = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+export type HTTPMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 export interface DenockOptions {
   method: HTTPMethods;
-  protocol: "http" | "https";
+  protocol: 'http' | 'https';
   host: string;
   port?: number;
   path?: string;
@@ -14,7 +14,7 @@ export interface DenockOptions {
   interception?: number;
 }
 
-export interface Denock {
+export interface Interceptor {
   destroy: () => void;
   called: () => number;
 }
