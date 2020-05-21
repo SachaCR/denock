@@ -10,19 +10,21 @@ export function extractMethodAndBodyFromRequestInitObject(
   let originalBody = "{}";
 
   if (init) {
-    if (typeof init.body !== "string") {
-      throw new Error(
-        "Sorry Denock only support stringified JSON as body in RequestInit object",
-      );
-    }
-
     originalMethod = init.method ? init.method.toUpperCase() : originalMethod;
 
     if (!acceptedMethods.includes(originalMethod)) {
       throw new Error("Sorry Denock does not support this method");
     }
 
-    originalBody = init.body;
+    if (init.body) {
+      if (typeof init.body !== "string") {
+        throw new Error(
+          "Sorry Denock only support stringified JSON as body in RequestInit object",
+        );
+      }
+
+      originalBody = init.body;
+    }
   }
 
   return {

@@ -171,3 +171,29 @@ Deno.test(
     assertEquals(status, 201);
   },
 );
+
+Deno.test(
+  "denock : Should handle when there is no body in the RequestInit object",
+  async () => {
+    denock({
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "6" },
+      replyStatus: 200,
+    });
+
+    const urlObject = new URL("https://jsonplaceholder.typicode.com/todos");
+
+    const response = await fetch(urlObject, {
+      method: "GET",
+    });
+
+    const body = await response.json();
+    const status = response.status;
+
+    assertEquals(body, { test: "6" });
+    assertEquals(status, 200);
+  },
+);
