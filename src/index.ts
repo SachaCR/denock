@@ -58,7 +58,10 @@ function denock(options: DenockOptions): Interceptor {
 
         if (request.body) {
           const readableStreamReader = request.body?.getReader();
-          originalBody = await extractBodyFromRequest(readableStreamReader);
+          const extractedBody = await extractBodyFromRequest(
+            readableStreamReader,
+          );
+          originalBody = extractedBody ? extractedBody : originalBody;
         }
 
         verifyMatch(targetURl, options, {

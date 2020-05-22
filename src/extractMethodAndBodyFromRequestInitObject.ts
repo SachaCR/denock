@@ -23,7 +23,9 @@ export function extractMethodAndBodyFromRequestInitObject(
         );
       }
 
-      originalBody = init.body;
+      if (init.body.length > 0) {
+        originalBody = init.body;
+      }
     }
   }
 

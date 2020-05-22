@@ -91,3 +91,30 @@ Deno.test(
     );
   },
 );
+
+Deno.test(
+  `denock() : with Request object
+  Given the intent to call fetch() GET https://jsonplaceholder.typicode.com/todos with a Request object
+  When the payload is empty
+  Then we should not try to JSON parse an empty string`,
+  async () => {
+    denock({
+      method: "GET",
+      protocol: "https",
+      host: "jsonplaceholder.typicode.com",
+      path: "/todos",
+      responseBody: { test: "9" },
+      replyStatus: 200,
+    });
+
+    const url = "https://jsonplaceholder.typicode.com/todos";
+    const request = new Request(url, { method: "GET" });
+    const response = await fetch(request);
+
+    const body = await response.json();
+    const status = response.status;
+
+    assertEquals(body, { test: "9" });
+    assertEquals(status, 200);
+  },
+);
