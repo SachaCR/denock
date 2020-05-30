@@ -30,4 +30,22 @@ export function verifyMatch(
       );
     }
   }
+
+  if (options.headers) {
+    if (requestData.originalHeaders === undefined) {
+      throw new Error(
+        `Denock: headers does not match: ${requestData.originalHeaders}`,
+      );
+    }
+
+    const originalHeaders = new Headers(requestData.originalHeaders);
+
+    const allHeaderMatches = options.headers.every((h) => {
+      return originalHeaders.get(h.header) === h.value;
+    });
+
+    if (!allHeaderMatches) {
+      throw new Error(`Denock: headers does not match`);
+    }
+  }
 }

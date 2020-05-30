@@ -18,6 +18,9 @@ denock({
   method: 'POST',
   protocol: 'https',
   host: 'jsonplaceholder.typicode.com',
+  headers: [{
+    header: 'content-type', value: 'application/json'
+  }],
   path: '/todos',
   requestBody: {
     userId: 2,
@@ -32,6 +35,9 @@ const urlObject = new URL('https://jsonplaceholder.typicode.com/todos');
 
 const response = await fetch(urlObject, {
   method: 'POST',
+  headers: new Headers({
+    'content-type': 'application/json'
+  }),
   body: JSON.stringify({
     userId: 2,
     id: 23024,
@@ -54,7 +60,7 @@ console.log(body) // ==> { test: '5' } instead of the real response.
 - `port`: optional port to intercept
 - `path`: optional, is the path of the query
 - `queryParams`?: optional, object that contains URL query parameters
-- `headers`: optional, Not implemented yet.
+- `headers`: optional. Is an array of objects representing headers
 - `requestBody`: optional, this is the body that the request must contains to be intercepted
 - `replyStatus`?: optional, default 200, this is the status code that will be returned on interception
 - `responseBody`: this is the body that will be returned on interception;
@@ -67,6 +73,5 @@ console.log(body) // ==> { test: '5' } instead of the real response.
 - [x] Implement intercept HTTP calls made with fetch with a Request object
 - [x] Implement intercept HTTP calls made with fetch with a URL object
 - [x] Implement interception number
-- [ ] Implement matching on headers
+- [x] Implement matching on headers
 - [ ] Implement basic authentication
-- [ ] Implement a mode where if there is no match the request is not intercepted.

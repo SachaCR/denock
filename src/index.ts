@@ -4,6 +4,7 @@ import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
 import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
 import { extractBodyFromRequest } from "./extractBodyFromRequest.ts";
 import { verifyMatch } from "./verifyMatch.ts";
+import { TypeGuardResult, determineInputType } from "./typeguard.ts";
 
 function denock(options: DenockOptions): Interceptor {
   const originalFetch = window.fetch;
@@ -23,53 +24,53 @@ function denock(options: DenockOptions): Interceptor {
     callCounter++;
 
     try {
-      if (typeof input === "string") {
-        const {
-          originalBody,
-          originalMethod,
-        } = extractMethodAndBodyFromRequestInitObject(init);
+      const inputTypeResult = determineInputType(input);
 
-        verifyMatch(targetURl, options, {
-          originalUrl: input,
-          originalBody,
-          originalMethod,
-        });
+      let originalUrl: string;
+
+      let {
+        originalBody,
+        originalMethod,
+        originalHeaders,
+      } = extractMethodAndBodyFromRequestInitObject(init);
+
+      switch (inputTypeResult.type) {
+        case "string":
+          originalUrl = inputTypeResult.stringURL;
+          break;
+
+        case "url":
+          originalUrl = inputTypeResult.url.toString();
+          break;
+
+        case "request":
+          const request = inputTypeResult.request;
+          originalUrl = inputTypeResult.request.url;
+          originalMethod = inputTypeResult.request.method.toUpperCase();
+
+          if (request.body) {
+            const readableStreamReader = request.body?.getReader();
+            const extractedBody = await extractBodyFromRequest(
+              readableStreamReader,
+            );
+            originalBody = extractedBody ? extractedBody : originalBody;
+          }
+
+          originalHeaders = request.headers;
+          break;
+
+        default:
+          const unknownType: never = inputTypeResult;
+          throw new TypeError(`Denock: Unknown type for input: ${unknownType}`);
+          break;
       }
 
-      if ((input as URL).toJSON !== undefined) {
-        const url = input as URL;
-        const {
-          originalBody,
-          originalMethod,
-        } = extractMethodAndBodyFromRequestInitObject(init);
-
-        verifyMatch(targetURl, options, {
-          originalUrl: url.toString(),
-          originalBody,
-          originalMethod,
-        });
-      }
-
-      if ((input as Request).clone !== undefined) {
-        const request = input as Request;
-        const originalUrl = request.url;
-        const originalMethod = request.method.toUpperCase();
-        let originalBody = "{}";
-
-        if (request.body) {
-          const readableStreamReader = request.body?.getReader();
-          const extractedBody = await extractBodyFromRequest(
-            readableStreamReader,
-          );
-          originalBody = extractedBody ? extractedBody : originalBody;
-        }
-
-        verifyMatch(targetURl, options, {
-          originalUrl,
-          originalMethod,
-          originalBody,
-        });
-      }
+      verifyMatch(targetURl, options, {
+        originalUrl,
+        originalBody,
+        originalMethod,
+        originalHeaders,
+      });
     } catch (err) {
       window.fetch = originalFetch;
       throw err;

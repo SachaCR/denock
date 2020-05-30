@@ -29,4 +29,5 @@ export interface RequestData {
   originalUrl: string;
   originalMethod: string;
   originalBody: string;
+  originalHeaders: Headers | string[][] | Record<string, string> | undefined;
 }

@@ -5,9 +5,11 @@ export function extractMethodAndBodyFromRequestInitObject(
 ): {
   originalMethod: string;
   originalBody: string;
+  originalHeaders: Headers | string[][] | Record<string, string> | undefined;
 } {
   let originalMethod = "GET";
   let originalBody = "{}";
+  let originalHeaders;
 
   if (init) {
     originalMethod = init.method ? init.method.toUpperCase() : originalMethod;
@@ -27,10 +29,13 @@ export function extractMethodAndBodyFromRequestInitObject(
         originalBody = init.body;
       }
     }
+
+    originalHeaders = init.headers;
   }
 
   return {
     originalBody,
     originalMethod,
+    originalHeaders,
   };
 }
