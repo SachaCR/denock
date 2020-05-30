@@ -29,6 +29,7 @@ denock({
     completed: false,
   },
   replyStatus: 201,
+    responseBody: { example: 'My mocked response' },
 });
 
 const urlObject = new URL('https://jsonplaceholder.typicode.com/todos');
@@ -48,7 +49,7 @@ const response = await fetch(urlObject, {
 
 const body = await response.json();
 
-console.log(body) // ==> { test: '5' } instead of the real response.
+console.log(body) // ==> { example: 'My mocked response' } instead of the real response.
 );
 ```
 
