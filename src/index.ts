@@ -19,7 +19,7 @@ function denock(options: DenockOptions): Interceptor {
 
   window.fetch = async (
     input: string | Request | URL,
-    init?: RequestInit | undefined,
+    init?: RequestInit | undefined
   ) => {
     callCounter++;
 
@@ -51,7 +51,7 @@ function denock(options: DenockOptions): Interceptor {
           if (request.body) {
             const readableStreamReader = request.body?.getReader();
             const extractedBody = await extractBodyFromRequest(
-              readableStreamReader,
+              readableStreamReader
             );
             originalBody = extractedBody ? extractedBody : originalBody;
           }
@@ -83,6 +83,10 @@ function denock(options: DenockOptions): Interceptor {
     return {
       status: replyStatus || 200,
       json: () => responseBody as any,
+      text: () => responseBody as any,
+      arrayBuffer: () => responseBody as any,
+      blob: () => responseBody as any,
+      formData: () => responseBody as any,
     } as Response;
   };
 
