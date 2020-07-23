@@ -81,6 +81,7 @@ function denock(options: DenockOptions): Interceptor {
     }
 
     return {
+      ok: replyStatus === undefined || replyStatus < 400 ? true : false,
       status: replyStatus || 200,
       json: () => responseBody as any,
       text: () => responseBody as any,
