@@ -1,6 +1,6 @@
 import { assertEquals } from "./deps.ts";
 
-import { DenockOptions, RequestData } from "./type.ts";
+import type { DenockOptions, RequestData } from "./type.ts";
 
 export function verifyMatch(
   targetUrl: string,
