@@ -1,2 +1,2 @@
 export { denock } from "./src/index.ts";
-export * from "./src/type.ts";
+export type * from "./src/type.ts";
