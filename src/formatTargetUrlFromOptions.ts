@@ -1,4 +1,4 @@
-import { DenockOptions } from "./type.ts";
+import type { DenockOptions } from "./type.ts";
 
 export function formatTargetUrlFromOptions(options: DenockOptions): string {
   const { host, protocol, path, port, queryParams } = options;

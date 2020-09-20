@@ -1,4 +1,4 @@
-import { DenockOptions, Interceptor, RequestData } from "./type.ts";
+import type { DenockOptions, Interceptor, RequestData } from "./type.ts";
 
 import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
 import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
@@ -19,7 +19,7 @@ function denock(options: DenockOptions): Interceptor {
 
   window.fetch = async (
     input: string | Request | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ) => {
     callCounter++;
 
@@ -51,7 +51,7 @@ function denock(options: DenockOptions): Interceptor {
           if (request.body) {
             const readableStreamReader = request.body?.getReader();
             const extractedBody = await extractBodyFromRequest(
-              readableStreamReader
+              readableStreamReader,
             );
             originalBody = extractedBody ? extractedBody : originalBody;
           }
