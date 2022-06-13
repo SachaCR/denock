@@ -50,7 +50,6 @@ const response = await fetch(urlObject, {
 const body = await response.json();
 
 console.log(body) // ==> { example: 'My mocked response' } instead of the real response.
-);
 ```
 
 ## Options object:
