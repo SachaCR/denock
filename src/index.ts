@@ -40,7 +40,7 @@ function denock(options: DenockOptions): Interceptor {
           break;
 
         case "request": {
-          const request = inputTypeResult.request;
+          const request = inputTypeResult.request.clone();
           originalUrl = inputTypeResult.request.url;
           originalMethod = inputTypeResult.request.method.toUpperCase();
 
@@ -71,6 +71,10 @@ function denock(options: DenockOptions): Interceptor {
       });
     } catch (err) {
       self.fetch = originalFetch;
+      if (options.passthrough) {
+        console.warn(err);
+        return await originalFetch(input, init)
+      }
       throw err;
     }
 

@@ -16,6 +16,8 @@ export interface DenockOptions {
   responseBody: any;
   /** Represent the number of call you wants to intercept*/
   interception?: number;
+
+  passthrough?: boolean; // if true it pass the same request to the global handler
 }
 
 export interface Interceptor {

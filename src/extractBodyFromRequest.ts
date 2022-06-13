@@ -1,5 +1,3 @@
-import { Buffer } from "./deps.ts"
-
 function isIterable(obj: any) {
   // checks for null and undefined
   if (obj == null) {
