@@ -1,13 +1,11 @@
 import { DenockOptions, Interceptor, RequestData } from "./type.ts";
-
-import { formatTargetUrlFromOptions } from "./formatTargetUrlFromOptions.ts";
 import { extractMethodAndBodyFromRequestInitObject } from "./extractMethodAndBodyFromRequestInitObject.ts";
 import { extractBodyFromRequest } from "./extractBodyFromRequest.ts";
 import { verifyMatch } from "./verifyMatch.ts";
 import { TypeGuardResult, determineInputType } from "./typeguard.ts";
 
 function denock(options: DenockOptions): Interceptor {
-  const originalFetch = window.fetch;
+  const originalFetch = self.fetch;
   let callCounter = 0;
   let callLimit = 1;
 
@@ -15,9 +13,7 @@ function denock(options: DenockOptions): Interceptor {
 
   callLimit = interception || 1;
 
-  const targetURl = formatTargetUrlFromOptions(options);
-
-  window.fetch = async (
+  self.fetch = async (
     input: string | Request | URL,
     init?: RequestInit | undefined
   ) => {
@@ -43,41 +39,43 @@ function denock(options: DenockOptions): Interceptor {
           originalUrl = inputTypeResult.url.toString();
           break;
 
-        case "request":
+        case "request": {
           const request = inputTypeResult.request;
           originalUrl = inputTypeResult.request.url;
           originalMethod = inputTypeResult.request.method.toUpperCase();
 
           if (request.body) {
             const readableStreamReader = request.body?.getReader();
+
             const extractedBody = await extractBodyFromRequest(
               readableStreamReader
             );
+
             originalBody = extractedBody ? extractedBody : originalBody;
           }
 
           originalHeaders = request.headers;
           break;
-
-        default:
+        }
+        default: {
           const unknownType: never = inputTypeResult;
           throw new TypeError(`Denock: Unknown type for input: ${unknownType}`);
-          break;
+        }
       }
 
-      verifyMatch(targetURl, options, {
+      verifyMatch(options, {
         originalUrl,
         originalBody,
         originalMethod,
         originalHeaders,
       });
     } catch (err) {
-      window.fetch = originalFetch;
+      self.fetch = originalFetch;
       throw err;
     }
 
     if (callLimit === callCounter) {
-      window.fetch = originalFetch;
+      self.fetch = originalFetch;
     }
 
     return {
@@ -93,7 +91,7 @@ function denock(options: DenockOptions): Interceptor {
 
   return {
     destroy: () => {
-      window.fetch = originalFetch;
+      globalThis.fetch = originalFetch;
     },
     called: () => {
       return callCounter;

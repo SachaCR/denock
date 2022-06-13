@@ -5,7 +5,7 @@ export interface DenockOptions {
   protocol: "http" | "https";
   host: string;
   port?: number;
-  path?: string;
+  path?: string | RegExp;
   queryParams?: any;
   headers?: Array<{ header: string; value: string }>;
   /** This is the body that the request must contains to be intercepted*/
