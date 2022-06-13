@@ -5,7 +5,7 @@ export interface DenockOptions {
   protocol: "http" | "https";
   host: string;
   port?: number;
-  path?: string;
+  path?: string | RegExp;
   queryParams?: any;
   headers?: Array<{ header: string; value: string }>;
   /** This is the body that the request must contains to be intercepted*/
@@ -16,6 +16,8 @@ export interface DenockOptions {
   responseBody: any;
   /** Represent the number of call you wants to intercept*/
   interception?: number;
+
+  passthrough?: boolean; // if true it pass the same request to the global handler
 }
 
 export interface Interceptor {

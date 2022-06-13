@@ -1,4 +1,4 @@
-import { assertEquals } from "./deps.ts";
+import { assertEquals, assertMatch } from "./deps.ts";
 
 import { denock } from "../mod.ts";
 
@@ -34,9 +34,6 @@ Deno.test(
       error = err;
     }
 
-    assertEquals(
-      error.message,
-      'network access to "https://jsonplaceholder.typicode.com/todos/1", run again with the --allow-net flag',
-    );
+    assertMatch(error.message, /--allow-net/);
   },
 );

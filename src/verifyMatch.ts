@@ -1,16 +1,20 @@
-import { assertEquals } from "./deps.ts";
+import { assertEquals, assertMatch } from "./deps.ts";
 
 import { DenockOptions, RequestData } from "./type.ts";
 
 export function verifyMatch(
-  targetUrl: string,
   options: DenockOptions,
   requestData: RequestData,
 ) {
-  if (requestData.originalUrl !== targetUrl) {
-    throw new Error(
-      `Denock: no match for this url : ${requestData.originalUrl}`,
-    );
+  const originalUrl = new URL(requestData.originalUrl);
+
+  assertEquals(originalUrl.host, options.host, `Denock: not match host ${originalUrl.host} ${options.host}`);
+  if (options.port) assertEquals(originalUrl.port, options.port, `Denock: not match port ${originalUrl.port} ${options.port}`);
+
+  if (options.path instanceof RegExp) {
+    assertMatch(originalUrl.pathname, options.path, `Denock: not match path ${originalUrl.pathname} ${options.path}`);
+  } else {
+    assertEquals(originalUrl.pathname, options.path, `Denock: not match path ${originalUrl.pathname} ${options.path}`);
   }
 
   if (requestData.originalMethod !== options.method) {
@@ -24,7 +28,7 @@ export function verifyMatch(
   if (options.requestBody) {
     try {
       assertEquals(originalBodyObject, options.requestBody);
-    } catch (err) {
+    } catch (_) {
       throw new Error(
         `Denock: body does not match: ${requestData.originalBody}`,
       );
