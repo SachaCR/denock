@@ -11,7 +11,7 @@ function denock(options: DenockOptions): Interceptor {
   let callCounter = 0;
   let callLimit = 1;
 
-  const { responseBody, interception, replyStatus } = options;
+  const { responseBody, responseHeaders, interception, replyStatus } = options;
 
   callLimit = interception || 1;
 
@@ -88,6 +88,7 @@ function denock(options: DenockOptions): Interceptor {
       arrayBuffer: () => responseBody as any,
       blob: () => responseBody as any,
       formData: () => responseBody as any,
+      headers: () => responseHeaders as any,
     } as Response;
   };
 
